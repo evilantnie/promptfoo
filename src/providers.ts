@@ -55,6 +55,7 @@ import { ScriptCompletionProvider } from './providers/scriptCompletion';
 import { VertexChatProvider, VertexEmbeddingProvider } from './providers/vertex';
 import { VoyageEmbeddingProvider } from './providers/voyage';
 import { WebhookProvider } from './providers/webhook';
+import { DatabricksChatCompletionProvider } from './providers/databricks';
 import type {
   ApiProvider,
   EnvOverrides,
@@ -104,6 +105,13 @@ export async function loadApiProvider(
   } else if (providerPath.startsWith('python:')) {
     const scriptPath = providerPath.split(':').slice(1).join(':');
     ret = new PythonProvider(scriptPath, providerOptions);
+  } else if (providerPath.startsWith('databricks:')) {
+    // Load Databricks module
+    const splits = providerPath.split(':');
+    const modelName = splits.slice(1).join(':');
+
+    ret = new DatabricksChatCompletionProvider(modelName || 'databricks-dbrx-instruct', providerOptions);
+
   } else if (providerPath.startsWith('openai:')) {
     // Load OpenAI module
     const splits = providerPath.split(':');
